@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  min-height: 100dvh;
+}
+
+/* 카테고리 칩 가로 스크롤 바 숨김 (Stitch 원본 화면과 동일) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* 모바일 터치 타깃 44px 최소 보장 (PRD 접근성 요구사항) */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Material Symbols Outlined — Stitch 화면 원본 아이콘 마크업(<span class="material-symbols-outlined">)을
+   그대로 유지하기 위한 필수 클래스. Google 공식 가이드 기본값. */
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
