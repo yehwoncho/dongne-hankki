@@ -7,6 +7,7 @@ import { findDistrictRestaurantById } from "@/lib/kakao-district";
 import { CATEGORY_LABELS } from "@/lib/category";
 import DetailActions from "@/components/DetailActions";
 import RestaurantMap from "@/components/RestaurantMap";
+import ReviewPanel from "@/components/ReviewPanel";
 
 // F4 식당 상세 — Stitch "식당 상세 - 스시오마카세 - 동네한끼" 화면을 그대로 포팅.
 //
@@ -181,6 +182,13 @@ export default async function RestaurantDetailPage({
               </a>
             </p>
           </section>
+
+          {/* 구글 리뷰 패널 — 카카오 로컬 API엔 별점/리뷰가 없어서 별도로 받아온다(F4 확장). */}
+          <ReviewPanel
+            id={restaurant.id}
+            name={restaurant.name}
+            address={restaurant.roadAddress ?? restaurant.jibunAddress ?? restaurant.name}
+          />
 
           <div className="bg-surface-container-low border border-outline-variant rounded-lg p-4 mb-4">
             <div className="flex items-start gap-2 text-on-surface-variant">
