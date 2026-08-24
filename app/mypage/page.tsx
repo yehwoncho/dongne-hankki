@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
 // "맛집주머니" — 로그인 사용자가 담은 가게 목록.
 // 검색/리뷰/AI 분석/담기 토글 로직은 전혀 건드리지 않는다. 삭제는 lib/savedPlaces.ts의
 // 기존 toggleSavedPlace()를 그대로 재사용해서 RestaurantCard의 하트 상태(공유 Set)와
@@ -7,7 +9,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase-client";
+import { getSupabaseClient } from "@/lib/supabase-client";
 import { useAuth, openAuthModal } from "@/lib/auth";
 import { toggleSavedPlace } from "@/lib/savedPlaces";
 import AuthWidget from "@/components/AuthWidget";
@@ -54,6 +56,13 @@ export default function MyPage() {
     let cancelled = false;
     setLoading(true);
     setError(null);
+
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setError("설정 오류로 담은 가게를 불러올 수 없어요.");
+      setLoading(false);
+      return;
+    }
 
     // 요구사항: "내 것만" 조건을 코드에서 걸지 않는다 — RLS(auth.uid() = user_id)가
     // 알아서 본인 행만 돌려준다. .eq("user_id", ...) 없음.

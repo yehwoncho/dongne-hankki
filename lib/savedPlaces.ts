@@ -8,7 +8,7 @@
 // 구독한다 — Supabase 클라이언트는 여러 구독자를 허용하므로 문제없다.
 
 import { useSyncExternalStore } from "react";
-import { supabase } from "./supabase-client";
+import { getSupabaseClient } from "./supabase-client";
 
 export interface SavedPlaceInput {
   placeId: string;
@@ -38,6 +38,8 @@ function setSavedIds(next: ReadonlySet<string>) {
 }
 
 async function loadForUser(userId: string) {
+  const supabase = getSupabaseClient();
+  if (!supabase) return;
   const { data, error } = await supabase.from("saved_places").select("place_id").eq("user_id", userId);
   if (error) {
     // 조용히 실패 — 카드들은 "안 담김" 상태로 남고, 사용자가 다시 담기를 누르면
@@ -52,6 +54,9 @@ async function loadForUser(userId: string) {
 function ensureStarted() {
   if (started) return;
   started = true;
+
+  const supabase = getSupabaseClient();
+  if (!supabase) return; // 설정 오류(환경변수 누락) — 담긴 항목 없음(EMPTY)으로 유지
 
   supabase.auth.getSession().then(({ data }) => {
     const userId = data.session?.user?.id ?? null;
@@ -99,6 +104,11 @@ export async function toggleSavedPlace(
   userId: string,
   place: SavedPlaceInput
 ): Promise<{ error: string | null }> {
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    return { error: "설정 오류로 지금 이 기능을 사용할 수 없어요." };
+  }
+
   const prev = savedIds;
   const wasSaved = prev.has(place.placeId);
 

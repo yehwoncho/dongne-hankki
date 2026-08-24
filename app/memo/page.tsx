@@ -1,20 +1,45 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
 // 독립 라우트: /memo
 // 이 파일 하나로 화면 전체(스타일 포함)를 구성한다. 기존 라우트·컴포넌트·설정은 건드리지 않는다.
 // 데이터: MCP로 연결된 Supabase 프로젝트의 public.memos 테이블 (text, created_at만 저장).
 // 디자인: notion-design.md 스펙(색·타이포·여백·모션·접근성)을 그대로 반영.
 
 import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import AuthWidget from "@/components/AuthWidget";
 
 // .env.local에 이미 채워져 있는 값을 읽는다. NEXT_PUBLIC_ 접두사라 빌드 시 클라이언트 번들에
 // 인라인되므로 "use client" 컴포넌트에서 process.env로 바로 참조할 수 있다.
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let supabaseClient: SupabaseClient | null = null;
+let warnedMissingConfig = false;
+
+/** 첫 호출 시점에만 클라이언트를 만들고 이후엔 캐시된 인스턴스를 재사용한다. 모듈 로드
+ * 시점에 곧바로 createClient()를 부르면, 배포 환경에 위 두 값이 빠져 있을 때 이 파일을
+ * 렌더링하는 것만으로 "supabaseUrl is required" 에러로 빌드/렌더링 자체가 죽는다. 값이
+ * 없으면 클라이언트를 만들지 않고 콘솔에 한 번만 에러를 남긴 뒤 null을 반환해, 호출부가
+ * 화면에서 안내하게 한다. */
+function getSupabaseClient() {
+  if (supabaseClient) return supabaseClient;
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    if (!warnedMissingConfig) {
+      console.error(
+        "[memo] NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY가 설정되지 않았습니다. 메모 기능이 비활성화됩니다."
+      );
+      warnedMissingConfig = true;
+    }
+    return null;
+  }
+  supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  return supabaseClient;
+}
+
+const CONFIG_ERROR_MESSAGE = "설정 오류로 메모 기능을 지금 사용할 수 없어요.";
 
 // notion-design.md §2 폰트 스택 — 이 프로젝트 전역 폰트(Inter)와 별개로 시스템 폰트를 그대로 쓴다.
 const FONT_SANS =
@@ -58,6 +83,12 @@ export default function MemoPage() {
     async function load() {
       setLoading(true);
       setError(null);
+      const supabase = getSupabaseClient();
+      if (!supabase) {
+        setError(CONFIG_ERROR_MESSAGE);
+        setLoading(false);
+        return;
+      }
       const { data, error } = await supabase
         .from("memos")
         .select("*")
@@ -81,6 +112,12 @@ export default function MemoPage() {
     if (!trimmed || adding) return;
     setAdding(true);
     setError(null);
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setAdding(false);
+      setError(CONFIG_ERROR_MESSAGE);
+      return;
+    }
     const { data, error } = await supabase
       .from("memos")
       .insert({ text: trimmed })
@@ -111,6 +148,12 @@ export default function MemoPage() {
     if (!trimmed || savingEdit) return;
     setSavingEdit(true);
     setError(null);
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setSavingEdit(false);
+      setError(CONFIG_ERROR_MESSAGE);
+      return;
+    }
     const { data, error } = await supabase
       .from("memos")
       .update({ text: trimmed })
@@ -140,6 +183,12 @@ export default function MemoPage() {
     if (deleting) return;
     setDeleting(true);
     setError(null);
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setDeleting(false);
+      setError(CONFIG_ERROR_MESSAGE);
+      return;
+    }
     const { error } = await supabase.from("memos").delete().eq("id", id);
     setDeleting(false);
     if (error) {

@@ -10,7 +10,7 @@
 // 쓰고, 에러 메시지만 한국어로 옮긴다.
 
 import { useSyncExternalStore } from "react";
-import { supabase } from "./supabase-client";
+import { getSupabaseClient } from "./supabase-client";
 
 export interface AuthUser {
   id: string;
@@ -57,6 +57,13 @@ function setState(next: AuthState) {
 function ensureStarted() {
   if (started) return;
   started = true;
+
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    // 설정 오류(환경변수 누락) — 로그인 안 된 상태로 취급하고 조용히 끝낸다.
+    setState({ user: null, loading: false });
+    return;
+  }
 
   supabase.auth.getSession().then(({ data }) => {
     setState({ user: toAuthUser(data.session?.user), loading: false });
@@ -119,11 +126,15 @@ function mapAuthError(message: string): string {
 }
 
 export async function signIn(email: string, password: string): Promise<{ error: string | null }> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return { error: "설정 오류로 지금 로그인할 수 없어요." };
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   return { error: error ? mapAuthError(error.message) : null };
 }
 
 export async function signUp(email: string, password: string): Promise<{ error: string | null }> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return { error: "설정 오류로 지금 회원가입할 수 없어요." };
   const { data, error } = await supabase.auth.signUp({ email, password });
   if (error) {
     return { error: mapAuthError(error.message) };
@@ -141,6 +152,8 @@ export async function signUp(email: string, password: string): Promise<{ error: 
 }
 
 export async function signOut(): Promise<void> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return;
   await supabase.auth.signOut();
 }
 
