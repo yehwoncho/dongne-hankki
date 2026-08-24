@@ -8,6 +8,7 @@ import { CATEGORY_LABELS } from "@/lib/category";
 import DetailActions from "@/components/DetailActions";
 import RestaurantMap from "@/components/RestaurantMap";
 import ReviewPanel from "@/components/ReviewPanel";
+import AuthWidget from "@/components/AuthWidget";
 
 // F4 식당 상세 — Stitch "식당 상세 - 스시오마카세 - 동네한끼" 화면을 그대로 포팅.
 //
@@ -70,19 +71,19 @@ export default async function RestaurantDetailPage({
     return (
       <>
         <header className="w-full top-0 sticky z-50 bg-surface border-b border-outline-variant">
-          <div className="flex items-center justify-between px-4 h-14 w-full max-w-md mx-auto">
+          <div className="flex items-center justify-between gap-2 px-4 h-14 w-full max-w-2xl mx-auto">
             <Link
               href="/"
               aria-label="홈으로"
-              className="flex items-center justify-center p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-150 text-primary"
+              className="flex items-center justify-center p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-150 text-primary flex-shrink-0"
             >
               <span className="material-symbols-outlined">arrow_back</span>
             </Link>
-            <h1 className="font-headline font-bold text-primary">식당 상세</h1>
-            <span className="w-9" aria-hidden="true" />
+            <h1 className="font-headline font-bold text-primary flex-1 min-w-0 text-center truncate">식당 상세</h1>
+            <AuthWidget variant="inline" />
           </div>
         </header>
-        <main className="flex-grow w-full max-w-md mx-auto flex flex-col items-center justify-center p-6 text-center">
+        <main className="flex-grow w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 text-center">
           <span
             className="material-symbols-outlined text-6xl text-outline-variant mb-6"
             style={{ fontVariationSettings: "'wght' 200" }}
@@ -117,20 +118,20 @@ export default async function RestaurantDetailPage({
     <>
       {/* TopAppBar */}
       <header className="w-full top-0 sticky z-50 bg-surface border-b border-outline-variant">
-        <div className="flex items-center justify-between px-4 h-14 w-full max-w-md mx-auto">
+        <div className="flex items-center justify-between gap-2 px-4 h-14 w-full max-w-2xl mx-auto">
           <Link
             href={backHref}
             aria-label="뒤로가기"
-            className="flex items-center justify-center p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-150 text-primary"
+            className="flex items-center justify-center p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-150 text-primary flex-shrink-0"
           >
             <span className="material-symbols-outlined">arrow_back</span>
           </Link>
-          <h1 className="font-headline font-bold text-primary">식당 상세</h1>
-          <span className="w-9" aria-hidden="true" />
+          <h1 className="font-headline font-bold text-primary flex-1 min-w-0 text-center truncate">식당 상세</h1>
+          <AuthWidget variant="inline" />
         </div>
       </header>
 
-      <main className="flex-grow w-full max-w-md mx-auto">
+      <main className="flex-grow w-full max-w-2xl mx-auto">
         {/* Hero Map — 좌표가 있을 때만 렌더링 (PRD F4 수용기준). 카카오맵 SDK 키(§14-G)가
             아직 없어 키 없이 쓸 수 있는 Leaflet + Esri 위성 타일로 위치를 보여준다. */}
         {hasCoords ? (
@@ -202,7 +203,7 @@ export default async function RestaurantDetailPage({
       </main>
 
       <footer className="w-full py-8 px-4 bg-surface-container-lowest border-t border-outline-variant mt-auto">
-        <div className="w-full max-w-md mx-auto flex flex-col items-center gap-2 font-body text-xs text-center text-on-surface-variant">
+        <div className="w-full max-w-2xl mx-auto flex flex-col items-center gap-2 font-body text-xs text-center text-on-surface-variant">
           <p>© 동네한끼. 데이터 출처: 카카오맵 (실시간 조회)</p>
         </div>
       </footer>

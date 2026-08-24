@@ -1,5 +1,6 @@
 import Link from "next/link";
 import NearbyView from "@/components/NearbyView";
+import AuthWidget from "@/components/AuthWidget";
 
 // F7 "내 주변 맛집" (PRD v0.2 §6-F7, 신설) — 나머지 화면(F1~F4)과 같은 TopAppBar/Footer 셸을
 // 서버 컴포넌트로 두고, 위치 권한·실시간 조회처럼 브라우저 API가 필요한 부분만 클라이언트 컴포넌트로 분리.
@@ -13,25 +14,25 @@ export default function NearbyPage() {
     <>
       {/* TopAppBar */}
       <header className="w-full top-0 sticky z-40 bg-surface border-b border-outline-variant">
-        <div className="flex items-center justify-between px-4 h-16 max-w-screen-md mx-auto">
+        <div className="flex items-center justify-between gap-2 px-4 sm:px-6 lg:px-8 h-16 max-w-screen-xl mx-auto">
           <Link
             href="/"
             aria-label="뒤로가기"
-            className="text-on-surface-variant hover:bg-surface-container transition-colors rounded-full p-2 active:opacity-80"
+            className="text-on-surface-variant hover:bg-surface-container transition-colors rounded-full p-2 active:opacity-80 flex-shrink-0"
           >
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>
               arrow_back
             </span>
           </Link>
-          <h1 className="font-headline text-on-surface text-lg font-bold flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-primary text-xl">near_me</span>
+          <h1 className="font-headline text-on-surface text-lg font-bold flex-1 min-w-0 flex items-center justify-center gap-1.5 truncate">
+            <span className="material-symbols-outlined text-primary text-xl flex-shrink-0">near_me</span>
             내 주변 맛집
           </h1>
-          <span className="w-9" aria-hidden="true" />
+          <AuthWidget variant="inline" />
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col max-w-screen-md w-full mx-auto">
+      <main className="flex-1 flex flex-col max-w-screen-xl w-full mx-auto">
         <NearbyView />
 
         <div className="w-full mt-auto flex flex-col items-center py-6 px-4 text-center bg-surface-container-lowest border-t border-outline-variant">
