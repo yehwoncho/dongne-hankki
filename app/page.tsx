@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getRegions, getMeta } from "@/lib/db";
+import { getSupabaseClient } from "@/lib/supabase-client";
 import AuthWidget from "@/components/AuthWidget";
+import RecommendationSection from "@/components/RecommendationSection";
 
 // F1① 시·도 선택 — "색인/장부(ledger)" 리디자인.
 // 이 파일에만 적용되는 팔레트라 CSS 변수로 스코프한다(다른 페이지/컴포넌트는 여전히
@@ -17,9 +19,32 @@ const PALETTE_VARS = {
 
 const SERIF = '"Noto Serif KR", serif';
 
+// "지금 인기 맛집 TOP 5" — public.get_popular_places RPC(SECURITY DEFINER)로 saved_places를
+// 전체 집계한다. RLS는 그대로 두고(본인 행만 select 가능) 이 함수만 우회해 "가게 정보 +
+// 담긴 횟수"만 반환하고 user_id는 절대 내보내지 않는다. 비로그인 방문자도 봐야 해서 anon
+// role에도 EXECUTE 권한이 열려 있다(SQL Editor에서 직접 실행한 마이그레이션).
+interface PopularPlace {
+  place_id: string;
+  place_name: string;
+  category_name: string | null;
+  address: string | null;
+  x: number | null;
+  y: number | null;
+  save_count: number;
+}
+
+async function getPopularPlaces(): Promise<PopularPlace[]> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return []; // 설정 오류(환경변수 누락) — 섹션은 빈 상태 안내로 대체
+  const { data, error } = await supabase.rpc("get_popular_places", { result_limit: 5 });
+  if (error || !data) return [];
+  return data as PopularPlace[];
+}
+
 export default async function HomePage() {
   const regions = getRegions();
   const meta = await getMeta();
+  const popularPlaces = await getPopularPlaces();
 
   return (
     <div style={PALETTE_VARS} className="flex-1 flex flex-col bg-[var(--paper)] text-[var(--ink)]">
@@ -98,6 +123,63 @@ export default async function HomePage() {
           ))}
         </div>
       </main>
+
+      {/* 인기 랭킹 — 지역 리스트와 같은 장부 행 패턴(얇은 --ledger 구분선, hover 시에만
+          --index-red 탭). 새로운 붉은색 사용처를 늘리지 않는다 — 위 마스트헤드 주석의
+          "--index-red는 정확히 4곳" 규칙을 그대로 지킨다. */}
+      <section className="w-full max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pb-4 border-t border-[var(--ledger)] pt-10">
+        <p className="text-xs tracking-[0.2em] uppercase text-[var(--muted-ink)] font-label mb-3">
+          인기 랭킹
+        </p>
+        <h2
+          className="text-2xl sm:text-3xl font-bold text-[var(--ink)] mb-5 leading-[1.1] break-keep"
+          style={{ fontFamily: SERIF }}
+        >
+          지금 인기 맛집 TOP 5
+        </h2>
+
+        {popularPlaces.length === 0 ? (
+          <p className="text-sm text-[var(--muted-ink)] font-body py-6">아직 담긴 가게가 없어요.</p>
+        ) : (
+          <ul>
+            {popularPlaces.map((place, i) => (
+              <li key={place.place_id}>
+                <a
+                  href={`https://place.map.kakao.com/${place.place_id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center justify-between gap-4 py-4 pl-3 -ml-3 border-b border-[var(--ledger)] border-l-[3px] border-l-transparent hover:border-l-[var(--index-red)] transition-colors"
+                >
+                  <span className="flex items-center gap-3 min-w-0">
+                    <span className="tabular-nums text-sm text-[var(--muted-ink)] font-label flex-shrink-0 w-5">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="font-bold text-[var(--ink)] text-base font-body truncate min-w-0">
+                      {place.place_name}
+                    </span>
+                    {place.category_name && (
+                      <span className="text-xs text-[var(--muted-ink)] font-label flex-shrink-0">
+                        {place.category_name}
+                      </span>
+                    )}
+                  </span>
+                  <span className="flex items-center gap-2 flex-shrink-0">
+                    <span className="tabular-nums text-sm text-[var(--muted-ink)] font-label">
+                      {place.save_count.toLocaleString("ko-KR")}번 담김
+                    </span>
+                    <span className="material-symbols-outlined text-[18px] text-[var(--muted-ink)] group-hover:text-[var(--ink)] transition-colors">
+                      open_in_new
+                    </span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {/* 맞춤 추천 — 로그인 사용자에게만. 클라이언트 컴포넌트(useAuth 필요)라 별도 분리했다. */}
+      <RecommendationSection />
 
       {/* Footer */}
       <footer className="w-full mt-auto bg-[var(--paper)] border-t border-[var(--ledger)]">
