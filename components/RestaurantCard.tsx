@@ -3,10 +3,25 @@ import { CATEGORY_LABELS } from "@/lib/category";
 import type { Restaurant } from "@/lib/types";
 
 // F3 식당 카드 — Stitch 목록 화면 <li> 마크업 그대로.
-export default function RestaurantCard({ restaurant }: { restaurant: Restaurant }) {
+//
+// ⚠️ 카카오 전환(WIRE_DETAIL_PAGE.md): 카카오 로컬 API엔 "id로 상세 조회"가 없어서,
+// 상세 페이지 링크에 sido/sigungu 슬러그를 같이 실어 보낸다 — 상세 페이지가 이 값으로
+// 목록 조회 때 캐시된 45건 안에서 id를 찾는다. restaurant 객체엔 슬러그가 없으므로
+// (sido/sigungu는 한글명뿐) 부모(목록 페이지)가 이미 알고 있는 슬러그를 별도 prop으로 받는다.
+export default function RestaurantCard({
+  restaurant,
+  sidoSlug,
+  sigunguSlug,
+}: {
+  restaurant: Restaurant;
+  sidoSlug: string;
+  sigunguSlug: string;
+}) {
+  const detailHref = `/restaurant/${restaurant.id}?sido=${sidoSlug}&sigungu=${sigunguSlug}`;
+
   return (
     <li className="px-4 py-5 border-b border-surface-variant flex justify-between items-start hover:bg-surface-container-lowest transition-colors">
-      <Link href={`/restaurant/${restaurant.id}`} className="flex-1 pr-4">
+      <Link href={detailHref} className="flex-1 pr-4">
         <div className="flex items-center gap-2 mb-1">
           <h2 className="text-base font-bold text-on-surface leading-tight">{restaurant.name}</h2>
           <span className="text-[10px] font-bold text-accent bg-accent/10 px-1.5 py-0.5 rounded">
@@ -25,7 +40,7 @@ export default function RestaurantCard({ restaurant }: { restaurant: Restaurant 
         </div>
       </Link>
       <Link
-        href={`/restaurant/${restaurant.id}`}
+        href={detailHref}
         aria-label={`${restaurant.name} 상세보기`}
         className="flex-shrink-0 w-10 h-10 rounded-full border border-outline-variant/50 flex items-center justify-center text-on-surface-variant hover:bg-surface-container active:scale-95 transition-all"
       >

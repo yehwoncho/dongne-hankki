@@ -2,9 +2,9 @@ import Link from "next/link";
 import { getRegions, getMeta } from "@/lib/db";
 
 // F1① 시·도 선택 — Stitch "지역 선택 - 동네한끼" 화면을 그대로 포팅.
-export default function HomePage() {
+export default async function HomePage() {
   const regions = getRegions();
-  const meta = getMeta();
+  const meta = await getMeta();
 
   return (
     <>

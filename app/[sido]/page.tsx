@@ -13,7 +13,7 @@ export default async function SidoPage({ params }: { params: Promise<{ sido: str
   if (!sido) redirect("/");
 
   const districts = getRegionsForSido(sido);
-  const meta = getMeta();
+  const meta = await getMeta();
 
   return (
     <>
