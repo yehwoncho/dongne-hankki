@@ -15,6 +15,7 @@ import CategoryChips from "@/components/CategoryChips";
 import Pagination from "@/components/Pagination";
 import RestaurantCard from "@/components/RestaurantCard";
 import EmptyState from "@/components/EmptyState";
+import AuthWidget from "@/components/AuthWidget";
 
 const PAGE_SIZE = 20;
 
@@ -78,7 +79,7 @@ export default async function ListPage({
     <>
       {/* Header (Shared Component Mapping) */}
       <header className="w-full top-0 sticky z-40 bg-surface border-b border-outline-variant flex flex-col">
-        <div className="flex items-center justify-between px-4 h-16 w-full">
+        <div className="flex items-center justify-between gap-2 px-4 sm:px-6 lg:px-8 h-16 w-full max-w-screen-xl mx-auto">
           <Link
             href={`/${sidoSlug}`}
             aria-label="뒤로가기"
@@ -89,10 +90,10 @@ export default async function ListPage({
             </span>
           </Link>
           <h1 className="font-headline text-on-surface text-lg font-bold flex-1 text-center truncate px-4">동네한끼</h1>
-          <span className="w-9 flex-shrink-0" aria-hidden="true" />
+          <AuthWidget variant="inline" />
         </div>
         {/* Breadcrumb / Active Filters */}
-        <div className="px-4 pb-3 flex items-center gap-2 overflow-x-auto no-scrollbar">
+        <div className="px-4 sm:px-6 lg:px-8 pb-3 flex items-center gap-2 overflow-x-auto no-scrollbar max-w-screen-xl mx-auto w-full">
           <div className="inline-flex items-center bg-surface-container-high text-on-surface rounded-full px-3 py-1.5 text-sm font-label whitespace-nowrap border border-outline-variant/30">
             <span>
               {sido} · {sigunguName}
@@ -104,7 +105,7 @@ export default async function ListPage({
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col w-full max-w-screen-xl mx-auto">
         {loadError ? (
           // 카카오 주소 검색 실패 등 — 500으로 죽이지 않고 재시도/다른 지역 이동 경로만 준다.
           <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
@@ -160,7 +161,8 @@ export default async function ListPage({
               <EmptyState basePath={basePath} sigunguName={sigunguName} selectedCats={cats} sidoSlug={sidoSlug} />
             ) : (
               <>
-                <ul className="flex flex-col">
+                {/* 넓은 화면에서는 2열 카드 그리드로 — 좁은 화면은 기존처럼 세로 목록 */}
+                <ul className="flex flex-col lg:grid lg:grid-cols-2 lg:gap-4 lg:py-4">
                   {items.map((r) => (
                     <RestaurantCard key={r.id} restaurant={r} sidoSlug={sidoSlug} sigunguSlug={sigunguSlug} />
                   ))}

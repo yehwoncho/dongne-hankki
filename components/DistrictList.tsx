@@ -41,9 +41,17 @@ export default function DistrictList({
             &ldquo;{query}&rdquo;와 일치하는 지역이 없어요
           </p>
         ) : (
-          <ul className="flex flex-col border-t border-outline-variant" role="listbox">
+          /* 좁은 화면에선 세로 목록(테두리로 행 구분), 넓은 화면에선 카드형 그리드로 —
+             큰 화면에서 목록 하나가 옆으로 쭉 늘어나 오른쪽이 텅 비어 보이는 걸 막는다. */
+          <ul
+            className="flex flex-col border-t border-outline-variant md:border-t-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-3"
+            role="listbox"
+          >
             {filtered.map((d) => (
-              <li key={d.slug} className="border-b border-outline-variant/60">
+              <li
+                key={d.slug}
+                className="border-b border-outline-variant/60 md:border md:rounded-lg md:overflow-hidden"
+              >
                 <Link
                   href={`/${sidoSlug}/${d.slug}`}
                   role="option"
