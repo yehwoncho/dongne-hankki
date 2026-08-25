@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { GoogleReview } from "@/lib/google-reviews";
+import ReviewAnalysisPanel from "@/components/ReviewAnalysisPanel";
 
 type Status = "loading" | "success" | "empty" | "error";
 
@@ -10,6 +11,13 @@ interface ReviewsResponse {
   rating?: number;
   userRatingCount?: number;
   reviews?: GoogleReview[];
+}
+
+type SummaryStatus = "idle" | "loading" | "ready" | "unavailable" | "error";
+
+interface SummaryResponse {
+  available: boolean;
+  summary?: string;
 }
 
 // F4 확장 — 구글 리뷰 패널. 카카오 로컬 API엔 별점/리뷰가 없어서 구글 Places API(New)에서
@@ -52,6 +60,42 @@ export default function ReviewPanel({
       cancelled = true;
     };
   }, [id, name, address, retryKey]);
+
+  // AI 리뷰 요약(제미나이) — 구글 리뷰가 성공적으로 로드되고 실제로 리뷰가 있을 때만 자동 호출.
+  // 위 리뷰 fetch effect와는 완전히 별개 — 그쪽 로직은 건드리지 않는다.
+  const [summaryStatus, setSummaryStatus] = useState<SummaryStatus>("idle");
+  const [summary, setSummary] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (status !== "success" || !data?.reviews || data.reviews.length === 0) return;
+
+    let cancelled = false;
+    setSummaryStatus("loading");
+
+    const url = `/api/review-summary?id=${encodeURIComponent(id)}&name=${encodeURIComponent(name)}&address=${encodeURIComponent(address)}`;
+
+    fetch(url)
+      .then(async (res) => {
+        if (!res.ok) throw new Error(`review-summary ${res.status}`);
+        return (await res.json()) as SummaryResponse;
+      })
+      .then((json) => {
+        if (cancelled) return;
+        if (json.available && json.summary) {
+          setSummary(json.summary);
+          setSummaryStatus("ready");
+        } else {
+          setSummaryStatus("unavailable");
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setSummaryStatus("error");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [status, data, id, name, address]);
 
   return (
     <section className="mb-8 border-t border-[var(--ledger)] pt-6">
@@ -140,6 +184,33 @@ export default function ReviewPanel({
             </ul>
           ) : (
             <p className="text-xs text-[var(--muted-ink)]">등록된 리뷰가 없어요</p>
+          )}
+
+          {summaryStatus !== "idle" && summaryStatus !== "unavailable" && (
+            <div className="mt-4 pt-4 border-t border-[var(--ledger)]">
+              <div className="flex items-center gap-1.5 mb-2">
+                <span className="material-symbols-outlined text-[16px] text-[var(--index-red)]">
+                  auto_awesome
+                </span>
+                <span className="text-xs font-label font-semibold text-[var(--muted-ink)] tracking-wide">
+                  AI 리뷰 요약
+                </span>
+              </div>
+              {summaryStatus === "loading" && (
+                <div className="h-4 w-3/4 bg-[var(--ledger)]/30 animate-pulse" aria-label="AI 요약 불러오는 중" />
+              )}
+              {summaryStatus === "ready" && summary && (
+                <p className="text-sm text-[var(--ink)] leading-relaxed">{summary}</p>
+              )}
+              {summaryStatus === "error" && (
+                <p className="text-xs text-[var(--muted-ink)]">AI 요약을 불러오지 못했어요</p>
+              )}
+            </div>
+          )}
+
+          {/* AI 감성 분석 — 리뷰가 실제로 있을 때만 마운트(그 안에서 자동으로 분석 시작) */}
+          {data.reviews && data.reviews.length > 0 && (
+            <ReviewAnalysisPanel id={id} name={name} address={address} />
           )}
         </div>
       )}
