@@ -168,7 +168,7 @@ export default function NearbyView() {
   return (
     <div className="flex-1 flex flex-col">
       {/* 컨트롤 바 — 반경 토글 + 카테고리 필터 (§6-F7) */}
-      <div className="px-4 py-3 border-b border-outline-variant bg-surface-bright flex flex-wrap items-center justify-between gap-3">
+      <div className="px-4 py-3 border-b border-[var(--ledger)] bg-[var(--paper)] flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-1" role="group" aria-label="반경 선택">
           {RADIUS_STEPS.map((r) => (
             <button
@@ -176,10 +176,10 @@ export default function NearbyView() {
               type="button"
               onClick={() => handleRadiusChange(r)}
               aria-pressed={radius === r}
-              className={`px-3 py-1.5 rounded-full text-xs font-label font-semibold border transition-colors touch-target ${
+              className={`px-3 py-1.5 text-xs font-label font-semibold border transition-colors touch-target ${
                 radius === r
-                  ? "bg-accent/10 text-accent border-accent"
-                  : "bg-surface-container text-on-surface-variant border-outline-variant/30"
+                  ? "bg-[var(--index-red)]/5 text-[var(--index-red)] border-[var(--index-red)]"
+                  : "bg-transparent text-[var(--muted-ink)] border-[var(--ledger)] hover:border-[var(--ink)] hover:text-[var(--ink)]"
               }`}
             >
               {r >= 1000 ? `${r / 1000}km` : `${r}m`}
@@ -187,12 +187,12 @@ export default function NearbyView() {
           ))}
         </div>
 
-        <label className="flex items-center gap-1.5 text-sm font-label text-on-surface-variant">
+        <label className="flex items-center gap-1.5 text-sm font-label text-[var(--muted-ink)]">
           카테고리
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value as Category | "all")}
-            className="bg-surface-container border border-outline-variant/30 rounded-lg px-2 py-1.5 text-sm text-on-surface touch-target outline-none focus:ring-2 focus:ring-primary"
+            className="bg-white border border-[var(--ledger)] rounded-md px-2 py-1.5 text-sm text-[var(--ink)] touch-target outline-none focus:ring-2 focus:ring-[var(--index-red)]"
           >
             <option value="all">전체</option>
             {CATEGORY_ORDER.map((c) => (
@@ -204,11 +204,11 @@ export default function NearbyView() {
         </label>
       </div>
 
-      {/* 지도 — F7은 지도가 메인 뷰 */}
-      <div className="w-full h-[45vh] min-h-[280px] relative bg-surface-variant">
+      {/* 지도 — F7은 지도가 메인 뷰. 여기 배경색은 페이지 쪽 컨테이너일 뿐 NearbyMap 내부는 미변경 */}
+      <div className="w-full h-[45vh] min-h-[280px] relative bg-[var(--ledger)]/15">
         {isLoading ? (
           <div className="w-full h-full flex items-center justify-center">
-            <span className="material-symbols-outlined animate-spin text-primary text-3xl">progress_activity</span>
+            <span className="material-symbols-outlined animate-spin text-[var(--index-red)] text-3xl">progress_activity</span>
           </div>
         ) : (
           <NearbyMap items={filteredItems} center={center} selectedId={selectedId} onSelect={setSelectedId} />
@@ -216,15 +216,19 @@ export default function NearbyView() {
       </div>
 
       {/* 상태 요약 줄 */}
-      <div className="px-4 py-3 flex items-center justify-between border-b border-surface-variant">
-        <span className="font-label text-sm text-on-surface">
-          {isLoading ? "불러오는 중…" : `주변 ${filteredItems.length}곳`}
+      <div className="px-4 py-3 flex items-center justify-between border-b border-[var(--ledger)]">
+        <span className="font-label text-sm text-[var(--ink)]">
+          {isLoading ? "불러오는 중…" : (
+            <>
+              주변 <span className="tabular-nums">{filteredItems.length}</span>곳
+            </>
+          )}
         </span>
         <SourceBadge source="kakao" />
       </div>
 
       {state.status === "ready" && state.truncated && (
-        <div className="bg-primary-container/40 text-on-primary-container text-xs font-label text-center py-2 px-4">
+        <div className="border-b border-[var(--index-red)]/30 bg-[var(--index-red)]/5 text-[var(--index-red)] text-xs font-label text-center py-2 px-4">
           이 반경엔 더 많은 곳이 있을 수 있어요 · 반경을 좁혀보세요
         </div>
       )}
@@ -233,9 +237,9 @@ export default function NearbyView() {
       {isLoading ? (
         <ul className="flex flex-col">
           {[...Array(3)].map((_, i) => (
-            <li key={i} className="px-4 py-5 border-b border-surface-variant animate-pulse">
-              <div className="h-4 bg-surface-container-high rounded w-1/2 mb-2" />
-              <div className="h-3 bg-surface-container-high rounded w-1/3" />
+            <li key={i} className="px-4 py-5 border-b border-[var(--ledger)] animate-pulse">
+              <div className="h-4 bg-[var(--ledger)]/30 w-1/2 mb-2" />
+              <div className="h-3 bg-[var(--ledger)]/30 w-1/3" />
             </li>
           ))}
         </ul>

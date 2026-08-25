@@ -31,12 +31,12 @@ export default function NearbyList({
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
         <span
-          className="material-symbols-outlined text-6xl text-outline-variant mb-4"
+          className="material-symbols-outlined text-6xl text-[var(--muted-ink)]/50 mb-4"
           style={{ fontVariationSettings: "'wght' 200" }}
         >
           location_off
         </span>
-        <p className="text-sm text-on-surface-variant">주변에 결과가 없어요</p>
+        <p className="text-sm text-[var(--muted-ink)]">주변에 결과가 없어요</p>
       </div>
     );
   }
@@ -52,8 +52,8 @@ export default function NearbyList({
               if (el) cardRefs.current.set(item.kakaoId, el);
               else cardRefs.current.delete(item.kakaoId);
             }}
-            className={`px-4 py-4 border-b border-surface-variant flex justify-between items-start transition-colors ${
-              isSelected ? "bg-primary-container/30" : "hover:bg-surface-container-lowest"
+            className={`group flex justify-between items-start gap-4 pl-3 -ml-3 pr-4 py-4 border-b border-[var(--ledger)] border-l-[3px] transition-colors ${
+              isSelected ? "border-l-[var(--index-red)] bg-[var(--index-red)]/5" : "border-l-transparent hover:border-l-[var(--index-red)]"
             }`}
           >
             <button
@@ -62,15 +62,17 @@ export default function NearbyList({
               className="flex-1 pr-4 text-left touch-target"
             >
               <div className="flex items-center gap-2 mb-1 flex-wrap">
-                <h3 className="text-base font-bold text-on-surface leading-tight">{item.name}</h3>
-                <span className="text-[10px] font-bold text-accent bg-accent/10 px-1.5 py-0.5 rounded">
+                <h3 className="text-base font-bold text-[var(--ink)] leading-tight">{item.name}</h3>
+                <span className="text-[10px] font-bold text-[var(--index-red)] border border-[var(--index-red)]/40 px-1.5 py-0.5">
                   {CATEGORY_LABELS[item.category]}
                 </span>
-                <span className="text-xs font-label font-semibold text-primary">{formatDistance(item.distanceMeters)}</span>
+                <span className="text-xs font-label font-semibold text-[var(--index-red)] tabular-nums">
+                  {formatDistance(item.distanceMeters)}
+                </span>
               </div>
               <div className="flex items-center mt-1">
-                <span className="material-symbols-outlined text-[16px] text-outline mr-1.5">call</span>
-                <p className={`text-sm font-body ${item.phone ? "text-on-surface-variant" : "text-outline"}`}>
+                <span className="material-symbols-outlined text-[16px] text-[var(--muted-ink)] mr-1.5">call</span>
+                <p className={`text-sm font-body ${item.phone ? "text-[var(--muted-ink)]" : "text-[var(--muted-ink)]/50"}`}>
                   {item.phone ?? "전화번호 없음"}
                 </p>
               </div>
@@ -84,7 +86,7 @@ export default function NearbyList({
                 <a
                   href={`tel:${item.phone}`}
                   aria-label={`${item.name} 전화 걸기`}
-                  className="w-10 h-10 rounded-full border border-outline-variant/50 flex items-center justify-center text-on-surface-variant hover:bg-surface-container active:scale-95 transition-all"
+                  className="w-10 h-10 rounded-full border border-[var(--ledger)] flex items-center justify-center text-[var(--muted-ink)] hover:bg-[var(--ledger)]/20 active:scale-95 transition-all"
                 >
                   <span className="material-symbols-outlined text-[20px]">call</span>
                 </a>
@@ -94,7 +96,7 @@ export default function NearbyList({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${item.name} 카카오맵에서 보기`}
-                className="w-10 h-10 rounded-full border border-outline-variant/50 flex items-center justify-center text-on-surface-variant hover:bg-surface-container active:scale-95 transition-all"
+                className="w-10 h-10 rounded-full border border-[var(--ledger)] flex items-center justify-center text-[var(--muted-ink)] hover:bg-[var(--ledger)]/20 active:scale-95 transition-all"
               >
                 <span className="material-symbols-outlined text-[20px]">map</span>
               </a>

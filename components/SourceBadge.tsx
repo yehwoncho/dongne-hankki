@@ -9,13 +9,13 @@ export default function SourceBadge({
 }) {
   if (source === "kakao") {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-label font-semibold bg-surface-container-high text-on-surface-variant border border-outline-variant/40">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-label font-semibold text-[var(--muted-ink)] border border-[var(--ledger)]">
         카카오맵 제공
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-label font-semibold bg-surface-container-high text-on-surface-variant border border-outline-variant/40">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-label font-semibold text-[var(--muted-ink)] border border-[var(--ledger)]">
       공공데이터 기준{snapshotDate ? ` ${snapshotDate}` : ""}
     </span>
   );

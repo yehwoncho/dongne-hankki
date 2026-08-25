@@ -31,45 +31,48 @@ export default function DetailActions({
       {phone ? (
         <a
           href={`tel:${phone}`}
-          className="flex flex-col items-center justify-center gap-1 p-2 rounded-lg hover:bg-surface-container transition-colors min-h-[44px]"
+          className="flex flex-col items-center justify-center gap-1 p-2 border border-[var(--ledger)] hover:border-[var(--index-red)] transition-colors min-h-[44px]"
         >
-          <span className="material-symbols-outlined text-primary">call</span>
-          <span className="text-[10px] font-label text-on-surface-variant">전화</span>
+          <span className="material-symbols-outlined text-[var(--index-red)]">call</span>
+          <span className="text-[10px] font-label text-[var(--muted-ink)]">전화</span>
         </a>
       ) : (
-        <span className="flex flex-col items-center justify-center gap-1 p-2 rounded-lg min-h-[44px] opacity-40 cursor-not-allowed" aria-disabled="true">
-          <span className="material-symbols-outlined text-outline">call</span>
-          <span className="text-[10px] font-label text-on-surface-variant">전화없음</span>
+        <span
+          className="flex flex-col items-center justify-center gap-1 p-2 border border-[var(--ledger)]/50 min-h-[44px] opacity-40 cursor-not-allowed"
+          aria-disabled="true"
+        >
+          <span className="material-symbols-outlined text-[var(--muted-ink)]/40">call</span>
+          <span className="text-[10px] font-label text-[var(--muted-ink)]">전화없음</span>
         </span>
       )}
 
       <button
         type="button"
         onClick={handleCopy}
-        className="flex flex-col items-center justify-center gap-1 p-2 rounded-lg hover:bg-surface-container transition-colors min-h-[44px]"
+        className="flex flex-col items-center justify-center gap-1 p-2 border border-[var(--ledger)] hover:border-[var(--index-red)] transition-colors min-h-[44px]"
       >
-        <span className="material-symbols-outlined text-primary">{copied ? "check" : "content_copy"}</span>
-        <span className="text-[10px] font-label text-on-surface-variant">{copied ? "복사됨" : "주소복사"}</span>
+        <span className="material-symbols-outlined text-[var(--index-red)]">{copied ? "check" : "content_copy"}</span>
+        <span className="text-[10px] font-label text-[var(--muted-ink)]">{copied ? "복사됨" : "주소복사"}</span>
       </button>
 
       <a
         href={kakaoUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex flex-col items-center justify-center gap-1 p-2 rounded-lg hover:bg-surface-container transition-colors min-h-[44px]"
+        className="flex flex-col items-center justify-center gap-1 p-2 border border-[var(--ledger)] hover:border-[var(--index-red)] transition-colors min-h-[44px]"
       >
-        <span className="material-symbols-outlined text-primary">map</span>
-        <span className="text-[10px] font-label text-on-surface-variant">카카오맵</span>
+        <span className="material-symbols-outlined text-[var(--index-red)]">map</span>
+        <span className="text-[10px] font-label text-[var(--muted-ink)]">카카오맵</span>
       </a>
 
       <a
         href={naverUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex flex-col items-center justify-center gap-1 p-2 rounded-lg hover:bg-surface-container transition-colors min-h-[44px]"
+        className="flex flex-col items-center justify-center gap-1 p-2 border border-[var(--ledger)] hover:border-[var(--index-red)] transition-colors min-h-[44px]"
       >
-        <span className="material-symbols-outlined text-primary">location_on</span>
-        <span className="text-[10px] font-label text-on-surface-variant">네이버지도</span>
+        <span className="material-symbols-outlined text-[var(--index-red)]">location_on</span>
+        <span className="text-[10px] font-label text-[var(--muted-ink)]">네이버지도</span>
       </a>
     </div>
   );

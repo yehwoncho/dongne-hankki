@@ -17,6 +17,20 @@ import AuthWidget from "@/components/AuthWidget";
 // 찾는다(findDistrictRestaurantById). 목록에서 클릭해 들어온 경우 십중팔구 캐시 히트라
 // 카카오 호출이 없다. sido/sigungu가 없으면(옛날 링크·직접 URL 입력) 원리상 이 id를
 // 찾을 수 없으므로 조회 자체를 시도하지 않고 안내 화면을 보여준다(500/404 아님).
+//
+// "색인/장부(ledger)" 리디자인 — app/page.tsx(랜딩) 등 다른 화면과 톤을 맞춘다.
+// 팔레트 값은 동일, 이 페이지도 별도 라우트 트리라 재선언 필요(app/[sido]/page.tsx와 동일 이유).
+// "위치 정보 없어 못 찾음" 폴백 분기의 본문(아이콘·문구·CTA)은 예외 상태라 범위 밖 — 헤더/푸터
+// 셸만 통일한다.
+const PALETTE_VARS = {
+  "--paper": "#FAFAF7",
+  "--ink": "#1C1B1A",
+  "--index-red": "#C81E3A",
+  "--ledger": "#DDD9D2",
+  "--muted-ink": "#6B6862",
+} as React.CSSProperties;
+
+const SERIF = '"Noto Serif KR", serif';
 
 type DetailSearchParams = { sido?: string; sigungu?: string };
 
@@ -69,18 +83,18 @@ export default async function RestaurantDetailPage({
   if (!region) {
     // sido/sigungu 쿼리 없이 들어온 경우 — 원리상 이 id를 찾을 수 없다. 안내만 보여준다.
     return (
-      <>
-        <header className="w-full top-0 sticky z-50 bg-surface border-b border-outline-variant">
+      <div style={PALETTE_VARS} className="flex-1 flex flex-col bg-[var(--paper)] text-[var(--ink)]">
+        <header className="w-full top-0 sticky z-50 bg-[var(--paper)] border-b border-[var(--ledger)]">
           <div className="flex items-center justify-between gap-2 px-4 h-14 w-full max-w-2xl mx-auto">
             <Link
               href="/"
               aria-label="홈으로"
-              className="flex items-center justify-center p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-150 text-primary flex-shrink-0"
+              className="flex items-center justify-center p-2 rounded-full hover:bg-[var(--ledger)]/30 transition-colors active:scale-95 duration-150 text-[var(--muted-ink)] hover:text-[var(--ink)] flex-shrink-0"
             >
               <span className="material-symbols-outlined">arrow_back</span>
             </Link>
-            <h1 className="font-headline font-bold text-primary flex-1 min-w-0 text-center truncate">식당 상세</h1>
-            <AuthWidget variant="inline" />
+            <h1 className="font-label font-bold text-[var(--ink)] flex-1 min-w-0 text-center truncate">식당 상세</h1>
+            <AuthWidget variant="inline" palette="index" />
           </div>
         </header>
         <main className="flex-grow w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 text-center">
@@ -101,7 +115,7 @@ export default async function RestaurantDetailPage({
             지역 선택으로 가기
           </Link>
         </main>
-      </>
+      </div>
     );
   }
 
@@ -115,19 +129,19 @@ export default async function RestaurantDetailPage({
   const hasCoords = Number.isFinite(restaurant.lat) && Number.isFinite(restaurant.lng);
 
   return (
-    <>
+    <div style={PALETTE_VARS} className="flex-1 flex flex-col bg-[var(--paper)] text-[var(--ink)]">
       {/* TopAppBar */}
-      <header className="w-full top-0 sticky z-50 bg-surface border-b border-outline-variant">
+      <header className="w-full top-0 sticky z-50 bg-[var(--paper)] border-b border-[var(--ledger)]">
         <div className="flex items-center justify-between gap-2 px-4 h-14 w-full max-w-2xl mx-auto">
           <Link
             href={backHref}
             aria-label="뒤로가기"
-            className="flex items-center justify-center p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-150 text-primary flex-shrink-0"
+            className="flex items-center justify-center p-2 rounded-full hover:bg-[var(--ledger)]/30 transition-colors active:scale-95 duration-150 text-[var(--muted-ink)] hover:text-[var(--ink)] flex-shrink-0"
           >
             <span className="material-symbols-outlined">arrow_back</span>
           </Link>
-          <h1 className="font-headline font-bold text-primary flex-1 min-w-0 text-center truncate">식당 상세</h1>
-          <AuthWidget variant="inline" />
+          <h1 className="font-label font-bold text-[var(--ink)] flex-1 min-w-0 text-center truncate">식당 상세</h1>
+          <AuthWidget variant="inline" palette="index" />
         </div>
       </header>
 
@@ -135,7 +149,7 @@ export default async function RestaurantDetailPage({
         {/* Hero Map — 좌표가 있을 때만 렌더링 (PRD F4 수용기준). 카카오맵 SDK 키(§14-G)가
             아직 없어 키 없이 쓸 수 있는 Leaflet + Esri 위성 타일로 위치를 보여준다. */}
         {hasCoords ? (
-          <div className="w-full h-48 md:h-64 relative bg-surface-variant overflow-hidden">
+          <div className="w-full h-48 md:h-64 relative bg-[var(--ledger)]/15 overflow-hidden">
             <RestaurantMap lat={restaurant.lat} lng={restaurant.lng} name={restaurant.name} />
           </div>
         ) : null}
@@ -143,8 +157,13 @@ export default async function RestaurantDetailPage({
         <div className="px-4 py-6">
           <div className="flex items-start justify-between gap-4 mb-4">
             <div>
-              <h2 className="font-headline font-bold text-2xl text-on-surface mb-2">{restaurant.name}</h2>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-label bg-primary text-on-primary">
+              <h2
+                className="text-2xl font-bold text-[var(--ink)] mb-2 break-keep"
+                style={{ fontFamily: SERIF }}
+              >
+                {restaurant.name}
+              </h2>
+              <span className="inline-flex items-center text-xs font-label font-bold text-[var(--index-red)] border border-[var(--index-red)]/40 px-1.5 py-0.5">
                 {CATEGORY_LABELS[restaurant.category]}
               </span>
             </div>
@@ -152,21 +171,21 @@ export default async function RestaurantDetailPage({
 
           <div className="space-y-3 mb-8">
             <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-outline mt-0.5">location_on</span>
+              <span className="material-symbols-outlined text-[var(--muted-ink)] mt-0.5">location_on</span>
               {restaurant.roadAddress ? (
                 <div>
-                  <p className="text-sm text-on-surface">{restaurant.roadAddress}</p>
+                  <p className="text-sm text-[var(--ink)]">{restaurant.roadAddress}</p>
                   {restaurant.jibunAddress && (
-                    <p className="text-xs text-on-surface-variant mt-0.5">{restaurant.jibunAddress}</p>
+                    <p className="text-xs text-[var(--muted-ink)] mt-0.5">{restaurant.jibunAddress}</p>
                   )}
                 </div>
               ) : (
-                <p className="text-sm text-outline">위치 정보가 없습니다</p>
+                <p className="text-sm text-[var(--muted-ink)]/50">위치 정보가 없습니다</p>
               )}
             </div>
             <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-outline">call</span>
-              <p className={`text-sm ${restaurant.phone ? "text-on-surface" : "text-outline"}`}>
+              <span className="material-symbols-outlined text-[var(--muted-ink)]">call</span>
+              <p className={`text-sm ${restaurant.phone ? "text-[var(--ink)]" : "text-[var(--muted-ink)]/50"}`}>
                 {restaurant.phone ?? "전화번호 없음"}
               </p>
             </div>
@@ -174,11 +193,11 @@ export default async function RestaurantDetailPage({
 
           <DetailActions phone={restaurant.phone} address={restaurant.roadAddress ?? restaurant.jibunAddress ?? restaurant.name} />
 
-          <section className="mb-8 border-t border-outline-variant pt-6">
-            <h3 className="font-headline font-semibold text-lg text-on-surface mb-3">소개</h3>
-            <p className="text-sm text-on-surface-variant leading-relaxed">
+          <section className="mb-8 border-t border-[var(--ledger)] pt-6">
+            <h3 className="font-bold text-lg text-[var(--ink)] mb-3">소개</h3>
+            <p className="text-sm text-[var(--muted-ink)] leading-relaxed">
               등록된 소개 정보가 없습니다.{" "}
-              <a href={restaurant.placeUrl} target="_blank" rel="noopener noreferrer" className="text-primary underline">
+              <a href={restaurant.placeUrl} target="_blank" rel="noopener noreferrer" className="text-[var(--index-red)] underline">
                 카카오맵에서 더 보기
               </a>
             </p>
@@ -191,8 +210,8 @@ export default async function RestaurantDetailPage({
             address={restaurant.roadAddress ?? restaurant.jibunAddress ?? restaurant.name}
           />
 
-          <div className="bg-surface-container-low border border-outline-variant rounded-lg p-4 mb-4">
-            <div className="flex items-start gap-2 text-on-surface-variant">
+          <div className="border border-[var(--ledger)] p-4 mb-4">
+            <div className="flex items-start gap-2 text-[var(--muted-ink)]">
               <span className="material-symbols-outlined text-[18px] shrink-0 mt-0.5">info</span>
               <p className="text-xs leading-relaxed">
                 이 정보는 카카오맵 제공 정보이며 실제와 다를 수 있습니다. 방문 전 확인을 권합니다.
@@ -202,11 +221,11 @@ export default async function RestaurantDetailPage({
         </div>
       </main>
 
-      <footer className="w-full py-8 px-4 bg-surface-container-lowest border-t border-outline-variant mt-auto">
-        <div className="w-full max-w-2xl mx-auto flex flex-col items-center gap-2 font-body text-xs text-center text-on-surface-variant">
+      <footer className="w-full py-8 px-4 bg-[var(--paper)] border-t border-[var(--ledger)] mt-auto">
+        <div className="w-full max-w-2xl mx-auto flex flex-col items-center gap-2 font-label text-xs text-center text-[var(--muted-ink)]">
           <p>© 동네한끼. 데이터 출처: 카카오맵 (실시간 조회)</p>
         </div>
       </footer>
-    </>
+    </div>
   );
 }

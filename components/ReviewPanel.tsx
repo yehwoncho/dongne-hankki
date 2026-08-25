@@ -54,30 +54,30 @@ export default function ReviewPanel({
   }, [id, name, address, retryKey]);
 
   return (
-    <section className="mb-8 border-t border-outline-variant pt-6">
-      <h3 className="font-headline font-semibold text-lg text-on-surface mb-3">구글 리뷰</h3>
+    <section className="mb-8 border-t border-[var(--ledger)] pt-6">
+      <h3 className="font-bold text-lg text-[var(--ink)] mb-3">구글 리뷰</h3>
 
       {status === "loading" && (
         <div className="space-y-3 animate-pulse" aria-label="리뷰 불러오는 중">
-          <div className="h-5 w-32 bg-surface-container-high rounded" />
-          <div className="h-16 bg-surface-container-high rounded-lg" />
-          <div className="h-16 bg-surface-container-high rounded-lg" />
+          <div className="h-5 w-32 bg-[var(--ledger)]/30" />
+          <div className="h-16 bg-[var(--ledger)]/30" />
+          <div className="h-16 bg-[var(--ledger)]/30" />
         </div>
       )}
 
       {status === "error" && (
         <div className="flex flex-col items-center text-center py-6">
           <span
-            className="material-symbols-outlined text-4xl text-outline-variant mb-3"
+            className="material-symbols-outlined text-4xl text-[var(--muted-ink)]/50 mb-3"
             style={{ fontVariationSettings: "'wght' 200" }}
           >
             wifi_off
           </span>
-          <p className="text-sm text-on-surface-variant mb-4">리뷰를 불러오지 못했어요</p>
+          <p className="text-sm text-[var(--muted-ink)] mb-4">리뷰를 불러오지 못했어요</p>
           <button
             type="button"
             onClick={() => setRetryKey((k) => k + 1)}
-            className="h-9 px-4 rounded-lg border border-primary text-primary text-sm font-label font-semibold hover:bg-primary-container hover:text-on-primary-container transition-colors active:scale-95"
+            className="h-9 px-4 border border-[var(--index-red)] text-[var(--index-red)] text-sm font-label font-semibold hover:bg-[var(--index-red)]/5 transition-colors active:scale-95"
           >
             다시 시도
           </button>
@@ -87,12 +87,12 @@ export default function ReviewPanel({
       {status === "empty" && (
         <div className="flex flex-col items-center text-center py-6">
           <span
-            className="material-symbols-outlined text-4xl text-outline-variant mb-3"
+            className="material-symbols-outlined text-4xl text-[var(--muted-ink)]/50 mb-3"
             style={{ fontVariationSettings: "'wght' 200" }}
           >
             rate_review
           </span>
-          <p className="text-sm text-on-surface-variant">구글 리뷰 정보가 없어요</p>
+          <p className="text-sm text-[var(--muted-ink)]">구글 리뷰 정보가 없어요</p>
         </div>
       )}
 
@@ -100,33 +100,33 @@ export default function ReviewPanel({
         <div>
           <div className="flex items-center gap-2 mb-4">
             <span
-              className="material-symbols-outlined text-[20px] text-accent"
+              className="material-symbols-outlined text-[20px] text-[var(--index-red)]"
               style={{ fontVariationSettings: "'FILL' 1" }}
             >
               star
             </span>
-            <span className="font-headline font-bold text-lg text-on-surface">
+            <span className="font-bold text-lg text-[var(--ink)] tabular-nums">
               {(data.rating ?? 0).toFixed(1)}
             </span>
-            <span className="text-sm text-on-surface-variant">
-              구글 리뷰 {(data.userRatingCount ?? 0).toLocaleString("ko-KR")}개
+            <span className="text-sm text-[var(--muted-ink)]">
+              구글 리뷰 <span className="tabular-nums">{(data.userRatingCount ?? 0).toLocaleString("ko-KR")}</span>개
             </span>
           </div>
 
           {data.reviews && data.reviews.length > 0 ? (
-            <ul className="space-y-3">
+            <ul>
               {data.reviews.map((r, i) => (
-                <li key={i} className="bg-surface-container-low border border-outline-variant rounded-lg p-3">
+                <li key={i} className="border-b border-[var(--ledger)] py-3">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-label font-semibold text-on-surface">{r.authorName}</span>
-                    <span className="text-xs text-on-surface-variant">{r.relativeTime}</span>
+                    <span className="text-sm font-label font-semibold text-[var(--ink)]">{r.authorName}</span>
+                    <span className="text-xs text-[var(--muted-ink)]">{r.relativeTime}</span>
                   </div>
                   <div className="flex items-center gap-0.5 mb-1.5">
                     {Array.from({ length: 5 }).map((_, s) => (
                       <span
                         key={s}
                         className={`material-symbols-outlined text-[14px] ${
-                          s < Math.round(r.rating) ? "text-accent" : "text-outline-variant"
+                          s < Math.round(r.rating) ? "text-[var(--index-red)]" : "text-[var(--muted-ink)]/30"
                         }`}
                         style={{ fontVariationSettings: "'FILL' 1" }}
                       >
@@ -134,12 +134,12 @@ export default function ReviewPanel({
                       </span>
                     ))}
                   </div>
-                  <p className="text-sm text-on-surface-variant leading-relaxed line-clamp-4">{r.text}</p>
+                  <p className="text-sm text-[var(--muted-ink)] leading-relaxed line-clamp-4">{r.text}</p>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-xs text-on-surface-variant">등록된 리뷰가 없어요</p>
+            <p className="text-xs text-[var(--muted-ink)]">등록된 리뷰가 없어요</p>
           )}
         </div>
       )}
