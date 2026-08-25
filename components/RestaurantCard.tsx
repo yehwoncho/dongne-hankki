@@ -55,21 +55,21 @@ export default function RestaurantCard({
   }
 
   return (
-    <li className="px-4 py-5 lg:p-5 border-b lg:border-b-0 lg:border border-surface-variant lg:rounded-xl flex justify-between items-start hover:bg-surface-container-lowest lg:hover:border-primary transition-colors">
+    <li className="group flex justify-between items-start gap-4 pl-3 -ml-3 pr-4 py-5 border-b border-[var(--ledger)] border-l-[3px] border-l-transparent hover:border-l-[var(--index-red)] transition-colors">
       <Link href={detailHref} className="flex-1 pr-4">
         <div className="flex items-center gap-2 mb-1">
-          <h2 className="text-base font-bold text-on-surface leading-tight">{restaurant.name}</h2>
-          <span className="text-[10px] font-bold text-accent bg-accent/10 px-1.5 py-0.5 rounded">
+          <h2 className="text-base font-bold text-[var(--ink)] leading-tight">{restaurant.name}</h2>
+          <span className="text-[10px] font-bold text-[var(--index-red)] border border-[var(--index-red)]/40 px-1.5 py-0.5">
             {CATEGORY_LABELS[restaurant.category]}
           </span>
         </div>
         <div className="flex items-start mt-2">
-          <span className="material-symbols-outlined text-[16px] text-outline mr-1.5 mt-0.5">map</span>
-          <p className="text-sm text-on-surface-variant font-body">{restaurant.roadAddress ?? "주소 정보 없음"}</p>
+          <span className="material-symbols-outlined text-[16px] text-[var(--muted-ink)] mr-1.5 mt-0.5">map</span>
+          <p className="text-sm text-[var(--muted-ink)] font-body">{restaurant.roadAddress ?? "주소 정보 없음"}</p>
         </div>
         <div className="flex items-center mt-1">
-          <span className="material-symbols-outlined text-[16px] text-outline mr-1.5">call</span>
-          <p className={`text-sm font-body ${restaurant.phone ? "text-on-surface-variant" : "text-outline"}`}>
+          <span className="material-symbols-outlined text-[16px] text-[var(--muted-ink)] mr-1.5">call</span>
+          <p className={`text-sm font-body ${restaurant.phone ? "text-[var(--muted-ink)]" : "text-[var(--muted-ink)]/50"}`}>
             {restaurant.phone ?? "전화번호 없음"}
           </p>
         </div>
@@ -83,10 +83,10 @@ export default function RestaurantCard({
             disabled={pending}
             aria-label={saved ? `${restaurant.name} 담기 취소` : `${restaurant.name} 담기`}
             aria-pressed={saved}
-            className="w-10 h-10 rounded-full border border-outline-variant/50 flex items-center justify-center hover:bg-surface-container active:scale-95 transition-all disabled:opacity-50"
+            className="w-10 h-10 rounded-full border border-[var(--ledger)] flex items-center justify-center hover:bg-[var(--ledger)]/20 active:scale-95 transition-all disabled:opacity-50"
           >
             <span
-              className={`material-symbols-outlined text-[20px] ${saved ? "text-error" : "text-on-surface-variant"}`}
+              className={`material-symbols-outlined text-[20px] ${saved ? "text-[var(--index-red)]" : "text-[var(--muted-ink)]"}`}
               style={{ fontVariationSettings: saved ? "'FILL' 1" : "'FILL' 0" }}
             >
               {saved ? "favorite" : "favorite_border"}
@@ -96,7 +96,7 @@ export default function RestaurantCard({
           {loginNotice && (
             <div
               role="status"
-              className="absolute right-0 top-11 z-10 whitespace-nowrap bg-on-surface text-surface text-xs font-label rounded-lg px-2.5 py-1.5 shadow-lg"
+              className="absolute right-0 top-11 z-10 whitespace-nowrap bg-[var(--ink)] text-[var(--paper)] text-xs font-label rounded-lg px-2.5 py-1.5"
             >
               로그인하면 담을 수 있어요
             </div>
@@ -106,7 +106,7 @@ export default function RestaurantCard({
         <Link
           href={detailHref}
           aria-label={`${restaurant.name} 상세보기`}
-          className="w-10 h-10 rounded-full border border-outline-variant/50 flex items-center justify-center text-on-surface-variant hover:bg-surface-container active:scale-95 transition-all"
+          className="w-10 h-10 rounded-full border border-[var(--ledger)] flex items-center justify-center text-[var(--muted-ink)] hover:bg-[var(--ledger)]/20 active:scale-95 transition-all"
         >
           <span className="material-symbols-outlined text-[20px]">location_on</span>
         </Link>

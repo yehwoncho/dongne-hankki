@@ -21,6 +21,17 @@ const PAGE_SIZE = 20;
 
 // F2(카테고리 칩) + F3(식당 목록) — Stitch "식당 목록 - 서울 강남구 일식" 화면을 그대로 포팅.
 // 결과 0건일 때는 같은 셸 안에서 F6("결과 없음") 블록으로 전환한다.
+//
+// "색인/장부(ledger)" 리디자인 — app/page.tsx(랜딩), app/[sido]/page.tsx와 톤을 맞춘다.
+// 팔레트 값은 동일, 이 페이지도 별도 라우트 트리라 재선언 필요(app/[sido]/page.tsx와 동일 이유).
+// loadError 폴백 블록·EmptyState·Pagination은 이번 요청 범위 밖이라 기존 Stitch 톤 그대로 둔다.
+const PALETTE_VARS = {
+  "--paper": "#FAFAF7",
+  "--ink": "#1C1B1A",
+  "--index-red": "#C81E3A",
+  "--ledger": "#DDD9D2",
+  "--muted-ink": "#6B6862",
+} as React.CSSProperties;
 export default async function ListPage({
   params,
   searchParams,
@@ -76,29 +87,29 @@ export default async function ListPage({
   }
 
   return (
-    <>
+    <div style={PALETTE_VARS} className="flex-1 flex flex-col bg-[var(--paper)] text-[var(--ink)]">
       {/* Header (Shared Component Mapping) */}
-      <header className="w-full top-0 sticky z-40 bg-surface border-b border-outline-variant flex flex-col">
+      <header className="w-full top-0 sticky z-40 bg-[var(--paper)] border-b border-[var(--ledger)] flex flex-col">
         <div className="flex items-center justify-between gap-2 px-4 sm:px-6 lg:px-8 h-16 w-full max-w-screen-xl mx-auto">
           <Link
             href={`/${sidoSlug}`}
             aria-label="뒤로가기"
-            className="text-on-surface-variant hover:bg-surface-container transition-colors rounded-full p-2 active:opacity-80 flex-shrink-0"
+            className="text-[var(--muted-ink)] hover:bg-[var(--ledger)]/30 hover:text-[var(--ink)] transition-colors rounded-full p-2 active:opacity-80 flex-shrink-0"
           >
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>
               arrow_back
             </span>
           </Link>
-          <h1 className="font-headline text-on-surface text-lg font-bold flex-1 text-center truncate px-4">동네한끼</h1>
-          <AuthWidget variant="inline" />
+          <h1 className="font-label text-[var(--ink)] text-lg font-bold flex-1 text-center truncate px-4">동네한끼</h1>
+          <AuthWidget variant="inline" palette="index" />
         </div>
         {/* Breadcrumb / Active Filters */}
         <div className="px-4 sm:px-6 lg:px-8 pb-3 flex items-center gap-2 overflow-x-auto no-scrollbar max-w-screen-xl mx-auto w-full">
-          <div className="inline-flex items-center bg-surface-container-high text-on-surface rounded-full px-3 py-1.5 text-sm font-label whitespace-nowrap border border-outline-variant/30">
+          <div className="inline-flex items-center border border-[var(--ledger)] text-[var(--ink)] rounded-full px-3 py-1.5 text-sm font-label whitespace-nowrap">
             <span>
               {sido} · {sigunguName}
             </span>
-            <Link href="/" aria-label="필터 제거" className="ml-2 text-on-surface-variant hover:text-on-surface flex items-center justify-center">
+            <Link href="/" aria-label="필터 제거" className="ml-2 text-[var(--muted-ink)] hover:text-[var(--index-red)] transition-colors flex items-center justify-center">
               <span className="material-symbols-outlined text-[16px]">close</span>
             </Link>
           </div>
@@ -139,7 +150,7 @@ export default async function ListPage({
         ) : (
           <>
             {truncated && (
-              <div className="bg-error-container text-on-error-container text-xs font-label text-center py-2 px-4">
+              <div className="border-b border-[var(--index-red)]/30 bg-[var(--index-red)]/5 text-[var(--index-red)] text-xs font-label text-center py-2 px-4">
                 ⚠ 카카오 검색 결과가 많아 최대 45건까지만 표시 중이에요. 전체 목록이 아닐 수 있어요.
               </div>
             )}
@@ -147,11 +158,11 @@ export default async function ListPage({
             <CategoryChips basePath={basePath} categories={categories} selected={cats} />
 
             {/* List Header */}
-            <div className="px-4 py-4 flex justify-between items-center bg-background border-b border-surface-variant">
-              <div className="text-on-surface">
-                <span className="font-label font-bold">총 {total.toLocaleString("ko-KR")}곳</span>
+            <div className="px-4 py-4 flex justify-between items-center border-b border-[var(--ledger)]">
+              <div className="text-[var(--ink)]">
+                <span className="font-label font-bold tabular-nums">총 {total.toLocaleString("ko-KR")}곳</span>
               </div>
-              <span className="flex items-center text-sm font-label text-on-surface-variant">
+              <span className="flex items-center text-sm font-label text-[var(--muted-ink)]">
                 가나다순
                 <span className="material-symbols-outlined text-[18px] ml-1">arrow_drop_down</span>
               </span>
@@ -161,8 +172,8 @@ export default async function ListPage({
               <EmptyState basePath={basePath} sigunguName={sigunguName} selectedCats={cats} sidoSlug={sidoSlug} />
             ) : (
               <>
-                {/* 넓은 화면에서는 2열 카드 그리드로 — 좁은 화면은 기존처럼 세로 목록 */}
-                <ul className="flex flex-col lg:grid lg:grid-cols-2 lg:gap-4 lg:py-4">
+                {/* 랜딩·시군구 선택과 같은 장부 리스트 — 그림자/카드 타일 대신 얇은 구분선 행 */}
+                <ul className="flex flex-col">
                   {items.map((r) => (
                     <RestaurantCard key={r.id} restaurant={r} sidoSlug={sidoSlug} sigunguSlug={sigunguSlug} />
                   ))}
@@ -175,19 +186,19 @@ export default async function ListPage({
 
         {/* Footer — 이제 문화공공데이터광장이 아니라 카카오 로컬 API 출처. 전수 목록이 아니라
             "최대 45건"이라는 걸 여기서도 숨기지 않는다. */}
-        <div className="w-full mt-auto flex flex-col items-center py-6 px-4 text-center bg-surface-container-lowest">
-          <p className="font-body text-[10px] leading-relaxed text-on-surface-variant">
+        <div className="w-full mt-auto flex flex-col items-center py-6 px-4 text-center bg-[var(--paper)] border-t border-[var(--ledger)]">
+          <p className="font-label text-[10px] leading-relaxed text-[var(--muted-ink)]">
             © 동네한끼. 카카오 로컬 API 기반 식당 정보 (구·카테고리당 최대 45건, 전수 목록 아님).
           </p>
           {!loadError && (
             <div className="flex gap-2 mt-1">
-              <span className="font-body text-[10px] text-on-surface-variant">실시간 조회</span>
-              <span className="font-body text-[10px] text-on-surface-variant">·</span>
-              <span className="font-body text-[10px] text-primary">출처 카카오맵</span>
+              <span className="font-label text-[10px] text-[var(--muted-ink)]">실시간 조회</span>
+              <span className="font-label text-[10px] text-[var(--muted-ink)]">·</span>
+              <span className="font-label text-[10px] text-[var(--index-red)]">출처 카카오맵</span>
             </div>
           )}
         </div>
       </main>
-    </>
+    </div>
   );
 }
