@@ -14,6 +14,16 @@ import { useAuth, openAuthModal } from "@/lib/auth";
 import { toggleSavedPlace } from "@/lib/savedPlaces";
 import AuthWidget from "@/components/AuthWidget";
 
+// "색인/장부(ledger)" 리디자인 — app/page.tsx(랜딩) 등 다른 화면과 톤을 맞춘다. 팔레트 값은
+// 동일, "use client" 페이지라 RecommendationSection.tsx와 같은 방식으로 모듈 최상단에 재선언.
+const PALETTE_VARS = {
+  "--paper": "#FAFAF7",
+  "--ink": "#1C1B1A",
+  "--index-red": "#C81E3A",
+  "--ledger": "#DDD9D2",
+  "--muted-ink": "#6B6862",
+} as React.CSSProperties;
+
 interface SavedPlaceRow {
   id: string;
   place_id: string;
@@ -106,24 +116,24 @@ export default function MyPage() {
   }
 
   return (
-    <>
+    <div style={PALETTE_VARS} className="flex-1 flex flex-col bg-[var(--paper)] text-[var(--ink)]">
       {/* TopAppBar — app/nearby/page.tsx, app/restaurant/[id]/page.tsx와 같은 패턴 */}
-      <header className="w-full top-0 sticky z-40 bg-surface border-b border-outline-variant">
+      <header className="w-full top-0 sticky z-40 bg-[var(--paper)] border-b border-[var(--ledger)]">
         <div className="flex items-center justify-between gap-2 px-4 sm:px-6 lg:px-8 h-16 max-w-screen-xl mx-auto">
           <Link
             href="/"
             aria-label="뒤로가기"
-            className="text-on-surface-variant hover:bg-surface-container transition-colors rounded-full p-2 active:opacity-80 flex-shrink-0"
+            className="text-[var(--muted-ink)] hover:bg-[var(--ledger)]/30 hover:text-[var(--ink)] transition-colors rounded-full p-2 active:opacity-80 flex-shrink-0"
           >
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>
               arrow_back
             </span>
           </Link>
-          <h1 className="font-headline text-on-surface text-lg font-bold flex-1 min-w-0 flex items-center justify-center gap-1.5 truncate">
-            <span className="material-symbols-outlined text-primary text-xl flex-shrink-0">favorite</span>
+          <h1 className="font-label text-[var(--ink)] text-lg font-bold flex-1 min-w-0 flex items-center justify-center gap-1.5 truncate">
+            <span className="material-symbols-outlined text-[var(--index-red)] text-xl flex-shrink-0">favorite</span>
             맛집주머니
           </h1>
-          <AuthWidget variant="inline" />
+          <AuthWidget variant="inline" palette="index" />
         </div>
       </header>
 
@@ -132,23 +142,23 @@ export default function MyPage() {
           <div className="py-16" aria-hidden="true" />
         ) : !user ? (
           <div className="flex flex-col items-center text-center gap-3 py-20 px-4">
-            <p className="text-on-surface-variant font-body">로그인이 필요해요.</p>
+            <p className="text-[var(--muted-ink)] font-body">로그인이 필요해요.</p>
             <button
               type="button"
               onClick={() => openAuthModal()}
-              className="touch-target px-5 rounded-full bg-primary text-on-primary text-sm font-label font-medium shadow-sm hover:opacity-90 transition-opacity"
+              className="touch-target px-5 rounded-full border border-[var(--index-red)] text-[var(--index-red)] text-sm font-label font-medium hover:bg-[var(--index-red)]/5 transition-colors"
             >
               로그인
             </button>
           </div>
         ) : places.length === 0 ? (
           <div className="flex flex-col items-center text-center gap-3 py-20 px-4">
-            <p className="text-on-surface-variant font-body">
+            <p className="text-[var(--muted-ink)] font-body">
               아직 담은 맛집이 없어요. 검색하러 가볼까요?
             </p>
             <Link
               href="/"
-              className="touch-target px-5 rounded-full bg-primary text-on-primary text-sm font-label font-medium shadow-sm hover:opacity-90 transition-opacity flex items-center"
+              className="touch-target px-5 rounded-full border border-[var(--index-red)] text-[var(--index-red)] text-sm font-label font-medium hover:bg-[var(--index-red)]/5 transition-colors flex items-center"
             >
               검색하러 가기
             </Link>
@@ -156,45 +166,45 @@ export default function MyPage() {
         ) : (
           <>
             {error && (
-              <p className="text-sm text-error px-4 pt-4" role="alert">
+              <p className="text-sm text-[var(--index-red)] px-4 pt-4" role="alert">
                 {error}
               </p>
             )}
-            {/* 넓은 화면에서는 2열 카드 그리드로 — RestaurantCard와 같은 처리 */}
-            <ul className="flex flex-col lg:grid lg:grid-cols-2 lg:gap-4 lg:py-4">
+            {/* 지역 상세 목록의 RestaurantCard와 동일한 장부 리스트로 통일 — 2열 카드 그리드 폐지 */}
+            <ul className="flex flex-col">
               {places.map((place) => (
                 <li
                   key={place.id}
-                  className="px-4 py-5 lg:p-5 border-b lg:border-b-0 lg:border border-surface-variant lg:rounded-xl flex justify-between items-start hover:bg-surface-container-lowest lg:hover:border-primary transition-colors"
+                  className="group flex justify-between items-start gap-4 pl-3 -ml-3 pr-4 py-5 border-b border-[var(--ledger)] border-l-[3px] border-l-transparent hover:border-l-[var(--index-red)] transition-colors"
                 >
                   <div className="flex-1 pr-4">
                     <div className="flex items-center gap-2 mb-1">
-                      <h2 className="text-base font-bold text-on-surface leading-tight">
+                      <h2 className="text-base font-bold text-[var(--ink)] leading-tight">
                         {place.place_name}
                       </h2>
                       {place.category_name && (
-                        <span className="text-[10px] font-bold text-accent bg-accent/10 px-1.5 py-0.5 rounded">
+                        <span className="text-[10px] font-bold text-[var(--index-red)] border border-[var(--index-red)]/40 px-1.5 py-0.5">
                           {place.category_name}
                         </span>
                       )}
                     </div>
                     <div className="flex items-start mt-2">
-                      <span className="material-symbols-outlined text-[16px] text-outline mr-1.5 mt-0.5">
+                      <span className="material-symbols-outlined text-[16px] text-[var(--muted-ink)] mr-1.5 mt-0.5">
                         map
                       </span>
-                      <p className="text-sm text-on-surface-variant font-body">
+                      <p className="text-sm text-[var(--muted-ink)] font-body">
                         {place.address ?? "주소 정보 없음"}
                       </p>
                     </div>
                     <div className="flex items-center mt-2 gap-3">
-                      <span className="text-xs text-outline font-label">
+                      <span className="text-xs text-[var(--muted-ink)] font-label tabular-nums">
                         {formatDate(place.created_at)} 담음
                       </span>
                       <a
                         href={googleMapsUrl(place)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs font-label font-medium text-primary hover:underline"
+                        className="text-xs font-label font-medium text-[var(--index-red)] hover:underline"
                       >
                         구글맵 보기
                       </a>
@@ -206,7 +216,7 @@ export default function MyPage() {
                     onClick={() => handleDelete(place)}
                     disabled={deletingId === place.id}
                     aria-label={`${place.place_name} 담기 취소`}
-                    className="flex-shrink-0 w-10 h-10 rounded-full border border-outline-variant/50 flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-error active:scale-95 transition-all disabled:opacity-50"
+                    className="flex-shrink-0 w-10 h-10 rounded-full border border-[var(--ledger)] flex items-center justify-center text-[var(--muted-ink)] hover:bg-[var(--ledger)]/20 hover:text-[var(--index-red)] active:scale-95 transition-all disabled:opacity-50"
                   >
                     <span className="material-symbols-outlined text-[20px]">close</span>
                   </button>
@@ -216,6 +226,6 @@ export default function MyPage() {
           </>
         )}
       </main>
-    </>
+    </div>
   );
 }
